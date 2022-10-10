@@ -1,9 +1,37 @@
-import React from 'react';
-import { Link, useLoaderData } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { ProductContext } from '../../layouts/Main/Main';
+import { addToDb } from '../../utilities/fakedb';
+import Product from '../Product/Product';
 
 const Orders = () => {
-    const product = useLoaderData()
-    console.log(product);
+    const products = useContext(ProductContext)
+    const [cart,setCart]=useState([])
+    
+
+    const handleAddToCart = (product)=>{
+       let newCart=[]
+       const exists = cart.find(existingProduct=> existingProduct.id === product.id)
+       if(!exists){
+           product.quantity = 1;
+           newCart=[...cart,product]
+       }
+       else{
+        const rest = cart.filter(existingProduct=> existingProduct.id !== product.id)
+        exists.quantity = exists.quantity+1;
+        newCart=[...rest,exists]
+       }
+       setCart(newCart)
+       addToDb(product.id)
+       toast.success('🦄 Product Added!', {
+        position: "top-left",
+        autoClose: 500,
+  
+        });
+    }
+    
     return (
   
               <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
@@ -47,34 +75,18 @@ const Orders = () => {
                   </p>
                 </div>
                 <div className="grid max-w-md gap-10 row-gap-8 lg:max-w-screen-lg sm:row-gap-10 lg:grid-cols-3 xl:max-w-screen-lg sm:mx-auto">
-                 
-                  <div className="flex flex-col transition duration-300 bg-white rounded shadow-2xl hover:shadow">
-                    <div className="relative w-full h-48">
-                      <img
-                        src="https://images.pexels.com/photos/3183181/pexels-photo-3183181.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;h=750&amp;w=1260"
-                        className="object-cover w-full h-full rounded-t"
-                        alt="Plan"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-between flex-grow p-8 border border-t-0 rounded-b">
-                      <div>
-                        <div className="text-lg font-semibold">Advanced</div>
-                        <p className="text-sm text-gray-900">
-                          A flower in my garden, a mystery in my panties. Heart attack
-                          never was so close.
-                        </p>
-                        <div className="mt-1 mb-4 mr-1 text-4xl font-bold sm:text-5xl">
-                          $38
-                        </div>
-                      </div>
-                      <Link
-                        to="/"
-                        className="inline-flex items-center justify-center w-full h-12 px-6 font-medium tracking-wide text-white transition duration-200 rounded shadow-md bg-purple-600 hover:bg-cyan-700 focus:shadow-outline focus:outline-none"
-                      >
-                        Buy Now
-                      </Link>
-                    </div>
-                  </div>
+                  {
+                    products.map(product =><Product
+                    
+                    key={product.id}
+                    product={product}
+                    handleAddToCart={handleAddToCart}
+                    ToastContainer={ToastContainer}
+                    >
+
+                    </Product>)
+                  }
+                  
                   
                 </div>
               </div>
