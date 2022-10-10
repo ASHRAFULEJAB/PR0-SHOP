@@ -1,23 +1,44 @@
-import logo from './logo.svg';
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
+import About from './components/About/About';
+import Cart from './components/Cart/Cart';
+import Home from './components/Home/Home';
+import Orders from './components/Orders/Orders';
+import Main from './layouts/Main/Main';
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path:'/',
+      element:<Main></Main>,
+      children:[
+        {
+          path:'/',
+          element:<Home></Home>
+        },
+        {
+          path:'/orders',
+          loader: ()=> fetch('https://fakestoreapi.com/products'),
+          element:<Orders></Orders>
+
+        },
+        {
+          path:'carts',
+          element:<Cart></Cart>
+        },
+        {
+          path:'/about',
+          element:<About></About>
+        }
+      ]
+    }
+  ])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router}>
+
+      </RouterProvider>
     </div>
   );
 }
